@@ -3,11 +3,22 @@
 import os
 import logging
 import hashlib
+import tempfile
 
 from charset_normalizer import detect
 from bs4 import UnicodeDammit
 
 from app.config import settings
+
+def can_write_dir(directory):
+    try:
+        testfile = tempfile.TemporaryFile(dir=directory)
+        testfile.close()
+        return True
+    except PermissionError:
+        return False
+    except FileNotFoundError:
+        return False
 
 
 def check_credentials(user, pw, request, log_success=True):
