@@ -6,6 +6,7 @@ import logging
 
 from app.config import settings
 from app.database import TableShowsRootfolder, TableShows, database, insert, update, delete, select
+from utilities.helper import can_write_dir
 from utilities.path_mappings import path_mappings
 from sonarr.info import url_api_sonarr
 from constants import HEADERS
@@ -78,7 +79,7 @@ def check_sonarr_rootfolder():
                 .values(accessible=0, error='This Sonarr root directory does not seem to be accessible by Bazarr. '
                                             'Please check path mapping or if directory/drive is online.')
                 .where(TableShowsRootfolder.id == item.id))
-        elif not os.access(path_mappings.path_replace(root_path), os.W_OK):
+        elif not can_write_dir(path_mappings.path_replace(root_path)):
             database.execute(
                 update(TableShowsRootfolder)
                 .values(accessible=0, error='Bazarr cannot write to this directory.')
